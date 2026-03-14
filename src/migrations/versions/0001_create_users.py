@@ -1,6 +1,7 @@
 """T015 — Initial migration: create users table."""
-from alembic import op
+
 import sqlalchemy as sa
+from alembic import op
 from sqlalchemy.dialects import postgresql
 
 revision = "0001_create_users"
@@ -12,7 +13,9 @@ depends_on = None
 def upgrade() -> None:
     op.create_table(
         "users",
-        sa.Column("id", postgresql.UUID(as_uuid=True), primary_key=True, nullable=False),
+        sa.Column(
+            "id", postgresql.UUID(as_uuid=True), primary_key=True, nullable=False
+        ),
         sa.Column("nome", sa.String(255), nullable=False),
         sa.Column("email", sa.String(255), unique=True, nullable=False),
         sa.Column("password_hash", sa.String(255), nullable=False),

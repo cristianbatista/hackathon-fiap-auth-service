@@ -1,6 +1,7 @@
 """T022 — JWT service: create and decode access tokens."""
+
 import uuid
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 
 from jose import ExpiredSignatureError, JWTError, jwt
 
@@ -11,7 +12,7 @@ ALGORITHM = "HS256"
 
 
 def create_access_token(user_id: uuid.UUID) -> str:
-    now = datetime.now(timezone.utc)
+    now = datetime.now(UTC)
     expire = now + timedelta(seconds=settings.jwt_expiry_seconds)
     payload = {
         "sub": str(user_id),
@@ -24,10 +25,10 @@ def create_access_token(user_id: uuid.UUID) -> str:
 def decode_access_token(token: str) -> uuid.UUID:
     try:
         payload = jwt.decode(token, settings.jwt_secret, algorithms=[ALGORITHM])
-    except ExpiredSignatureError:
-        raise TokenExpiredError("Token has expired")
-    except JWTError:
-        raise InvalidTokenError("Token is invalid")
+    except ExpiredSignatureError as exc:
+        raise TokenExpiredError("Token has expired") from exc
+    except JWTError as exc:
+        raise InvalidTokenError("Token is invalid") from exc
 
     sub = payload.get("sub")
     if sub is None:
@@ -35,5 +36,5 @@ def decode_access_token(token: str) -> uuid.UUID:
 
     try:
         return uuid.UUID(sub)
-    except ValueError:
-        raise InvalidTokenError("Token 'sub' is not a valid UUID")
+    except ValueError as exc:
+        raise InvalidTokenError("Token 'sub' is not a valid UUID") from exc

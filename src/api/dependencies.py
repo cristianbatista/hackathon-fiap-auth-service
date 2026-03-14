@@ -1,4 +1,5 @@
 """T025 / T030 — get_current_user dependency."""
+
 import uuid
 
 from fastapi import Depends, HTTPException, Request, status
@@ -24,7 +25,9 @@ def get_current_user(
     trace_id = getattr(request.state, "trace_id", "")
 
     if not token:
-        logger.warning("Token absent", extra={"trace_id": trace_id, "path": request.url.path})
+        logger.warning(
+            "Token absent", extra={"trace_id": trace_id, "path": request.url.path}
+        )
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Not authenticated",
@@ -39,18 +42,21 @@ def get_current_user(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Token expired",
             headers={"WWW-Authenticate": "Bearer"},
-        )
+        ) from None
     except InvalidTokenError:
         logger.warning("Token invalid", extra={"trace_id": trace_id})
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="Invalid token",
             headers={"WWW-Authenticate": "Bearer"},
-        )
+        ) from None
 
     user = db.query(User).filter(User.id == user_id).first()
     if user is None:
-        logger.warning("Token valid but user not found", extra={"trace_id": trace_id, "user_id": str(user_id)})
+        logger.warning(
+            "Token valid but user not found",
+            extra={"trace_id": trace_id, "user_id": str(user_id)},
+        )
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED,
             detail="User not found",

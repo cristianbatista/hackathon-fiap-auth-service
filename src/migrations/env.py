@@ -8,8 +8,8 @@ from sqlalchemy import engine_from_config, pool
 # Make sure src/ is importable when running alembic from the service root
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.dirname(__file__))))
 
-from src.core.database import Base  # noqa: E402
 import src.models  # noqa: E402, F401 — import all models so they register on Base.metadata
+from src.core.database import Base  # noqa: E402
 
 config = context.config
 

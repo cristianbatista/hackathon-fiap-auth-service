@@ -1,8 +1,9 @@
 """T015 — SQLAlchemy User model."""
-import uuid
-from datetime import datetime, timezone
 
-from sqlalchemy import DateTime, String, event
+import uuid
+from datetime import UTC, datetime
+
+from sqlalchemy import DateTime, String
 from sqlalchemy.dialects.postgresql import UUID
 from sqlalchemy.orm import Mapped, mapped_column
 
@@ -18,11 +19,13 @@ class User(Base):
         default=uuid.uuid4,
     )
     nome: Mapped[str] = mapped_column(String(255), nullable=False)
-    email: Mapped[str] = mapped_column(String(255), unique=True, nullable=False, index=True)
+    email: Mapped[str] = mapped_column(
+        String(255), unique=True, nullable=False, index=True
+    )
     password_hash: Mapped[str] = mapped_column(String(255), nullable=False)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True),
-        default=lambda: datetime.now(timezone.utc),
+        default=lambda: datetime.now(UTC),
         nullable=False,
     )
 
@@ -32,5 +35,5 @@ class User(Base):
         if "email" in kwargs:
             kwargs["email"] = kwargs["email"].lower()
         if "created_at" not in kwargs or kwargs.get("created_at") is None:
-            kwargs["created_at"] = datetime.now(timezone.utc)
+            kwargs["created_at"] = datetime.now(UTC)
         super().__init__(**kwargs)

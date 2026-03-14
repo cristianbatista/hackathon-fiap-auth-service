@@ -1,7 +1,7 @@
 """T016 — Auth service: password hashing and user creation."""
-from sqlalchemy.orm import Session
 
 import bcrypt
+from sqlalchemy.orm import Session
 
 from src.core.exceptions import UserAlreadyExistsError
 from src.core.logging import get_logger
@@ -32,7 +32,9 @@ def create_user(db: Session, nome: str, email: str, password: str) -> User:
     db.add(user)
     db.commit()
     db.refresh(user)
-    logger.info("User created", extra={"email": normalized_email, "user_id": str(user.id)})
+    logger.info(
+        "User created", extra={"email": normalized_email, "user_id": str(user.id)}
+    )
     return user
 
 

@@ -1,5 +1,7 @@
 """T028 — Contract tests for auth middleware and owner protection."""
+
 import uuid
+from datetime import UTC
 from unittest.mock import MagicMock
 
 import pytest
@@ -8,8 +10,8 @@ from fastapi.testclient import TestClient
 
 @pytest.fixture()
 def client():
-    from src.main import app
     from src.core.database import get_db
+    from src.main import app
 
     mock_db = MagicMock()
     app.dependency_overrides[get_db] = lambda: mock_db
@@ -37,6 +39,7 @@ def test_get_me_forged_signature_returns_401(client):
 
 def test_require_owner_different_user_raises_403():
     from fastapi import HTTPException
+
     from src.api.guard import require_owner
     from src.models.user import User
 
@@ -65,7 +68,7 @@ def test_require_owner_same_user_does_not_raise():
 
 
 def test_expired_token_returns_401(client):
-    from datetime import datetime, timedelta, timezone
+    from datetime import datetime, timedelta
 
     from jose import jwt as jose_jwt
 
@@ -76,7 +79,7 @@ def test_expired_token_returns_401(client):
     expired_token = jose_jwt.encode(
         {
             "sub": str(uuid.uuid4()),
-            "exp": datetime.now(timezone.utc) - timedelta(hours=1),
+            "exp": datetime.now(UTC) - timedelta(hours=1),
         },
         settings.jwt_secret,
         algorithm=ALGORITHM,

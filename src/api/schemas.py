@@ -1,11 +1,12 @@
 """T017 / T023 — Pydantic schemas."""
+
 import uuid
 from datetime import datetime
 
-from pydantic import BaseModel, EmailStr, Field, field_validator
-
+from pydantic import BaseModel, EmailStr, Field
 
 # --- Registration ---
+
 
 class RegisterRequest(BaseModel):
     nome: str = Field(..., min_length=1, max_length=255)
@@ -23,6 +24,7 @@ class UserResponse(BaseModel):
 
 
 # --- Login ---
+
 
 class LoginRequest(BaseModel):
     email: EmailStr

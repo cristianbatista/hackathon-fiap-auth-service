@@ -1,6 +1,5 @@
 """T012 — Unit tests for User model."""
-import pytest
-from unittest.mock import MagicMock
+
 from uuid import UUID
 
 
@@ -45,4 +44,8 @@ def test_user_created_at_not_set_on_init():
 
     user = User(nome="User", email="u@example.com", password_hash="h")
     # created_at may be None before DB flush
-    assert not hasattr(user, "created_at") or user.created_at is None or user.created_at is not None
+    assert (
+        not hasattr(user, "created_at")
+        or user.created_at is None
+        or user.created_at is not None
+    )

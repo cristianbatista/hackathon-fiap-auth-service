@@ -2,7 +2,7 @@ import json
 import logging
 import sys
 import uuid
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 
 
 class JSONFormatter(logging.Formatter):
@@ -11,7 +11,7 @@ class JSONFormatter(logging.Formatter):
     def format(self, record: logging.LogRecord) -> str:
         trace_id = getattr(record, "trace_id", str(uuid.uuid4()))
         log_entry = {
-            "timestamp": datetime.now(timezone.utc).isoformat(),
+            "timestamp": datetime.now(UTC).isoformat(),
             "service": self.SERVICE_NAME,
             "level": record.levelname,
             "message": record.getMessage(),

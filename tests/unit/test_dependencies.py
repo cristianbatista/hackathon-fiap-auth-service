@@ -1,5 +1,7 @@
 """T027 — Unit tests for get_current_user dependency."""
+
 import uuid
+from datetime import UTC
 from unittest.mock import MagicMock
 
 import pytest
@@ -14,6 +16,7 @@ def _make_request(trace_id: str = "test-trace"):
 
 def test_get_current_user_no_token_raises_401():
     from fastapi import HTTPException
+
     from src.api.dependencies import get_current_user
 
     db = MagicMock()
@@ -26,9 +29,11 @@ def test_get_current_user_no_token_raises_401():
 
 
 def test_get_current_user_expired_token_raises_401():
-    from datetime import datetime, timedelta, timezone
+    from datetime import datetime, timedelta
+
     from fastapi import HTTPException
     from jose import jwt as jose_jwt
+
     from src.api.dependencies import get_current_user
     from src.core.config import settings
     from src.services.jwt_service import ALGORITHM
@@ -38,7 +43,7 @@ def test_get_current_user_expired_token_raises_401():
     expired_token = jose_jwt.encode(
         {
             "sub": str(uuid.uuid4()),
-            "exp": datetime.now(timezone.utc) - timedelta(hours=1),
+            "exp": datetime.now(UTC) - timedelta(hours=1),
         },
         settings.jwt_secret,
         algorithm=ALGORITHM,
@@ -52,6 +57,7 @@ def test_get_current_user_expired_token_raises_401():
 
 def test_get_current_user_invalid_signature_raises_401():
     from fastapi import HTTPException
+
     from src.api.dependencies import get_current_user
 
     db = MagicMock()

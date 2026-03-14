@@ -1,30 +1,39 @@
 """T018 / T024 / T026 — Auth router."""
+
 from fastapi import APIRouter, Depends, HTTPException, Request, status
 from sqlalchemy.orm import Session
 
 from src.api.dependencies import get_current_user
 from src.api.schemas import LoginRequest, RegisterRequest, TokenResponse, UserResponse
+from src.core.config import settings
 from src.core.database import get_db
-from src.core.exceptions import InvalidCredentialsError, UserAlreadyExistsError
+from src.core.exceptions import UserAlreadyExistsError
 from src.core.logging import get_logger
 from src.models.user import User
 from src.services.auth_service import authenticate_user, create_user
 from src.services.jwt_service import create_access_token
-from src.core.config import settings
 
 logger = get_logger(__name__)
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
 
-@router.post("/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED)
+@router.post(
+    "/register", response_model=UserResponse, status_code=status.HTTP_201_CREATED
+)
 def register(payload: RegisterRequest, request: Request, db: Session = Depends(get_db)):
     trace_id = getattr(request.state, "trace_id", "")
     try:
-        user = create_user(db, nome=payload.nome, email=payload.email, password=payload.password)
+        user = create_user(
+            db, nome=payload.nome, email=payload.email, password=payload.password
+        )
     except UserAlreadyExistsError:
-        logger.warning("Register failed — email already exists", extra={"trace_id": trace_id})
-        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email already registered")
+        logger.warning(
+            "Register failed — email already exists", extra={"trace_id": trace_id}
+        )
+        raise HTTPException(
+            status_code=status.HTTP_409_CONFLICT, detail="Email already registered"
+        ) from None
     logger.info(
         "User registered",
         extra={"trace_id": trace_id, "user_id": str(user.id), "email": user.email},

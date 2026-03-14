@@ -1,5 +1,3 @@
-import logging
-
 from fastapi import Request
 from fastapi.responses import JSONResponse
 from starlette.exceptions import HTTPException as StarletteHTTPException
@@ -25,7 +23,9 @@ class InvalidTokenError(Exception):
     pass
 
 
-async def http_exception_handler(request: Request, exc: StarletteHTTPException) -> JSONResponse:
+async def http_exception_handler(
+    request: Request, exc: StarletteHTTPException
+) -> JSONResponse:
     logger.warning(
         "HTTP exception",
         extra={

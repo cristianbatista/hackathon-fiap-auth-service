@@ -1,4 +1,5 @@
 """T033 — Health endpoint module."""
+
 from fastapi import APIRouter
 
 router = APIRouter(tags=["health"])

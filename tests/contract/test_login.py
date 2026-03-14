@@ -1,4 +1,5 @@
 """T021 — Contract tests for POST /auth/login and GET /auth/me."""
+
 import uuid
 from unittest.mock import MagicMock
 
@@ -7,8 +8,8 @@ import pytest
 
 @pytest.fixture()
 def client_with_user():
-    from src.main import app
     from src.core.database import get_db
+    from src.main import app
     from src.models.user import User
     from src.services.auth_service import hash_password
 
@@ -28,6 +29,7 @@ def client_with_user():
     app.dependency_overrides[get_db] = mock_get_db
 
     from fastapi.testclient import TestClient
+
     with TestClient(app) as c:
         yield c, mock_db, mock_user
 

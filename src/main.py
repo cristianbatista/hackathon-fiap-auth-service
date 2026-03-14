@@ -4,11 +4,11 @@ from fastapi import FastAPI, Request
 from prometheus_fastapi_instrumentator import Instrumentator
 from starlette.exceptions import HTTPException as StarletteHTTPException
 
+from src.api.auth_router import router as auth_router
+from src.api.health import router as health_router
 from src.core.config import settings
 from src.core.exceptions import http_exception_handler, unhandled_exception_handler
 from src.core.logging import setup_logging
-from src.api.auth_router import router as auth_router
-from src.api.health import router as health_router
 
 setup_logging(settings.log_level)
 
@@ -38,4 +38,3 @@ app.include_router(health_router)
 @app.get("/ping")
 def ping() -> dict:
     return {"pong": True}
-

@@ -1,14 +1,16 @@
 """T014 — Contract tests for POST /auth/register."""
+
+from unittest.mock import MagicMock
+
 import pytest
 from fastapi.testclient import TestClient
-from unittest.mock import MagicMock, patch
 
 
 @pytest.fixture()
 def client():
     """TestClient with database dependency overridden."""
-    from src.main import app
     from src.core.database import get_db
+    from src.main import app
 
     mock_db = MagicMock()
     # No existing user by default

@@ -1,7 +1,8 @@
 """T013 — Unit tests for auth_service functions."""
+
+from unittest.mock import MagicMock
+
 import pytest
-from unittest.mock import MagicMock, patch
-from uuid import uuid4
 
 
 def test_hash_password_produces_bcrypt_hash():
@@ -33,8 +34,8 @@ def test_verify_password_wrong():
 def test_create_user_raises_if_email_exists():
     """create_user raises UserAlreadyExistsError if email already taken."""
     from src.core.exceptions import UserAlreadyExistsError
-    from src.services.auth_service import create_user
     from src.models.user import User
+    from src.services.auth_service import create_user
 
     db = MagicMock()
     existing_user = User(nome="Existing", email="taken@example.com", password_hash="h")
@@ -51,7 +52,7 @@ def test_create_user_normalizes_email_to_lowercase():
     db = MagicMock()
     db.query.return_value.filter.return_value.first.return_value = None
 
-    created_user = create_user(db, nome="User", email="USER@EXAMPLE.COM", password="pass1234")
+    create_user(db, nome="User", email="USER@EXAMPLE.COM", password="pass1234")
 
     db.add.assert_called_once()
     added = db.add.call_args[0][0]
@@ -70,4 +71,6 @@ def test_create_user_stores_hash_not_plain():
 
     added = db.add.call_args[0][0]
     assert added.password_hash != plain
-    assert added.password_hash.startswith("$2b$") or added.password_hash.startswith("$2a$")
+    assert added.password_hash.startswith("$2b$") or added.password_hash.startswith(
+        "$2a$"
+    )

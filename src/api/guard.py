@@ -1,4 +1,5 @@
 """T029 — require_owner guard helper."""
+
 import uuid
 
 from fastapi import HTTPException, status
